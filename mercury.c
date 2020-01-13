@@ -263,10 +263,7 @@ static int str2bank(PyObject *name)
 
     if (PyBytes_Check(name))
         text = PyBytes_AsString(name);
-#if PY_MAJOR_VERSION >= 3
-    else if (PyUnicode_Check(name))
-        text = PyUnicode_AsUTF8(name);
-#endif
+
     else
     {
         PyErr_SetString(PyExc_TypeError, "expecting string");
@@ -425,7 +422,7 @@ parse_gen2filter(TMR_TagFilter *tag_filter, PyObject *arg, TMR_GEN2_Select_actio
         if((obj = PyDict_GetItemString(arg, "action")) != NULL)
         {
             if (!PyUnicode_Check(arg) ||
-                (tag_filter->u.gen2Select.action = str2action(PyUnicode_AsUTF8(arg)) == -1))
+                (tag_filter->u.gen2Select.action = str2action(PyBytes_AsString(arg)) == -1))
             {
                 PyErr_SetString(PyExc_TypeError, "invalid action");
                 return 0;
@@ -2045,7 +2042,7 @@ TagData_set_protocol(TagData *self, PyObject *value, void *closure)
     else
     {
         TMR_TagProtocol protocol;
-        if((protocol = str2protocol(PyUnicode_AsUTF8(value))) == TMR_TAG_PROTOCOL_NONE)
+        if((protocol = str2protocol(PyBytes_AsString(value))) == TMR_TAG_PROTOCOL_NONE)
             return -1;
 
         self->tag.protocol = protocol;
